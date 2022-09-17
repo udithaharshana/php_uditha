@@ -125,6 +125,35 @@
         }, "GET", "_self");
     });
 
+    //delete saler
+    $('#dttbl').on('click', '.delete', function(e) {
+        e.preventDefault();
+        var sid = $(this).attr('id');
+
+        $.ajax({
+                        type: "POST",
+                        url: "{{ url('/saller_delete') }}",
+                        async: false,
+                        data: {
+                            "sid": sid
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        beforeSend: function() {
+                            $("body").css("cursor", "wait");
+                        },
+                        success: function(msg) {
+                            $("body").css("cursor", "default");
+                            location.reload();
+                        },
+                        error: function() {
+                            $("body").css("cursor", "default");
+                            console.log("Error");
+                        }
+                    });
+    });
+
 
     //send prvw id to prvw page
     $('#dttbl').on('click', '.prvw', function(e) {
@@ -143,11 +172,9 @@
             },
             beforeSend: function() {
                 $("body").css("cursor", "wait");
-                $('#name').addClass('data_loading');
             },
             success: function(data) {
                 $("body").css("cursor", "default");
-                $('#name').removeClass('data_loading');
                 $('#my_modal_label').html(data.name);
                 var content = '<div class="row pt-2" ><div class="col-md-12"><table class="table table-striped"><tbody><tr><th>Id</th><td>' + data.sid + '</td></tr><tr><th>Name</th>  <td>' + data.name + '</td></tr><tr><th>Telephone</th><td>' + data.telephone + '</td></tr><tr><th>Email Address</th><td>' + data.email + '</td></tr><tr><th>Join Date</th><td>' + data.join_date + '</td></tr><tr><th>Current Route</th><td>' + data.route.name + '</td></tr><tr><th>Comment</th><td>' + data.comment + '</td></tr></tbody></table></div></div></div></div>';
                 $('#modal_body').html(content);
@@ -155,12 +182,11 @@
             },
             error: function() {
                 $("body").css("cursor", "default");
-                $('#name').removeClass('data_loading');
                 console.log("Error");
             }
         });
     });
-    
+
     //send prvw id to edit page
     $('#modal_close').click(function() {
         $('#modalview').fadeOut();

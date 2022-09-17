@@ -32,19 +32,19 @@
                 <div class="form-group col-md-12">
                     <label class="col-md-3 control-label text-left">Full Name </label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control" id="name" name="name" autocomplete="off" value="{{ isset($saller) ? $saller->name : ''}}">
+                        <input type="text" class="form-control" id="name" name="name" autocomplete="off" value="{{ isset($saller) ? $saller->name : @old(name) }}">
                     </div>
                 </div>
                 <div class="form-group col-md-12">
                     <label class="col-md-3 control-label text-left">Email Address</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control" id="email" name="email" autocomplete="off" value="{{ isset($saller) ? $saller->email : ''}}">
+                        <input type="text" class="form-control" id="email" name="email" autocomplete="off" value="{{ isset($saller) ? $saller->email : @old(email) }}">
                     </div>
                 </div>
                 <div class="form-group col-md-12">
                     <label class="col-md-3 control-label text-left">Telephone</label>
                     <div class="col-md-6">
-                        <input type="text" class="form-control" id="telephone" name="telephone" autocomplete="off" value="{{ isset($saller) ? $saller->telephone : ''}}">
+                        <input type="text" class="form-control" id="telephone" name="telephone" autocomplete="off" value="{{ isset($saller) ? $saller->telephone : @old(telephone) }}">
                     </div>
                 </div>
                 <div class="form-group col-md-12">
@@ -65,7 +65,7 @@
                         <select class="form-control select" name="rid" id="rid">
                             <option value="">Select Route</option>
                             @foreach ($routes as $row)
-                            <option value="{{ $row['rid'] }} " @if(isset($saller) && $saller->route_id==$row['rid']) selected @endif> {{ $row['name'] }}</option>
+                            <option value="{{ $row['rid'] }} " @if(isset($saller) && ($saller->route_id==$row['rid'] ||@old(rid)==$row['rid'] ) ) selected @endif> {{ $row['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -74,7 +74,7 @@
                 <div class="form-group col-md-12">
                     <label class="col-md-3 control-label text-left">Remark</label>
                     <div class="col-md-6">
-                        <textarea class="form-control" style="resize:none" autocomplete="off" id="remark" name="remark">{{ isset($saller) ? $saller->comment : ''}}</textarea>
+                        <textarea class="form-control" style="resize:none" autocomplete="off" id="remark" name="remark">{{ isset($saller) ? $saller->comment : @old(remark) }}</textarea>
                     </div>
                 </div>
 
@@ -100,6 +100,7 @@
 });
 
 @if(isset($saller))
+//join date set
 let join_date = new Date('{{ $saller->join_date }}');
 $('.date').datepicker("setDate", join_date);
 @endif
@@ -144,9 +145,9 @@ $('.date').datepicker("setDate", join_date);
         //Check Existing saller name
         jQuery.validator.addMethod("chk_name", function(value, element) {
             var name = $('#name').val();
+            var sid = $('#sid').val();
             if (name != '') {
                 function valdt() {
-                    var sid = 0;
                     var temp = 0;
                     $.ajax({
                         type: "POST",
@@ -161,16 +162,13 @@ $('.date').datepicker("setDate", join_date);
                         },
                         beforeSend: function() {
                             $("body").css("cursor", "wait");
-                            $('#name').addClass('data_loading');
                         },
                         success: function(msg) {
                             temp = msg;
                             $("body").css("cursor", "default");
-                            $('#name').removeClass('data_loading');
                         },
                         error: function() {
                             $("body").css("cursor", "default");
-                            $('#name').removeClass('data_loading');
                             console.log("Error");
                         }
                     });
@@ -194,7 +192,6 @@ $('.date').datepicker("setDate", join_date);
             var frmdt = $('#frmdt').valid();
             if (frmdt == true) {
                 $("body").css("cursor", "wait");
-                $(".loader").fadeIn('slow');
                 document.forms["frmdt"].submit();
             } else {
                 console.error('Validation Error');

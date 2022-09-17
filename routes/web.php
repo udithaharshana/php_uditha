@@ -27,6 +27,7 @@ Route::group(['middleware'=>['myweb:POST','web']], function(){
 
     Route::post('/saller_details', 'sallerController@Preview');
     Route::post('/saller_name_validate', 'sallerController@name_validate');
+    Route::post('/saller_delete', 'sallerController@Delete');
     Route::post('/saller_save', 'sallerController@save');
 
 });

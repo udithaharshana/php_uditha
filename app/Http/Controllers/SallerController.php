@@ -37,7 +37,23 @@ class SallerController extends Controller
 
             return view('pages/saller_edit')->with($data);
         } catch (Exception $e) {
-            dd($e->getMessage());
+            return  redirect()->back()->withErrors(App::environment('local') ? $e->getMessage() : '');
+
+        }
+    }
+
+    /* Saller Delete */
+    public function Delete(Request $request)
+    {
+        try {
+            $saller = Saller::find($request->sid);
+            $saller->status = 0;
+            $saller->save();
+
+            return redirect('/sales_team');
+
+        } catch (Exception $e) {
+            return  redirect()->back()->withErrors(App::environment('local') ? $e->getMessage() : '');
         }
     }
 
@@ -91,8 +107,7 @@ class SallerController extends Controller
                 return redirect('/sales_team');
             }
         } catch (Exception $e) {
-
-            return  App::environment('local') ? dd($e->getMessage(), $e->getLine()) : '';
+            return  redirect()->back()->withErrors(App::environment('local') ? $e->getMessage() : '');
         }
     }
 
@@ -100,7 +115,7 @@ class SallerController extends Controller
     public function HomeData(Request $request)
     {
         try {
-            $data = Saller::with(['route'])->get();
+            $data = Saller::with(['route'])->where('status','1')->get();
             return Datatables::of($data)->toJson();
 
         } catch (Exception $e) {
@@ -118,7 +133,7 @@ class SallerController extends Controller
             return response()->json($saller);
 
         } catch (Exception $e) {
-            dd($e->getMessage());
+            return  redirect()->back()->withErrors(App::environment('local') ? $e->getMessage() : '');
         }
     }
 
